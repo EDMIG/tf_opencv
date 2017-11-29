@@ -1,0 +1,9 @@
+# ignore intermediate build files
+bin/tf_classification.exe
+bin/tf_classification.pdb
+build/vc14/tensorflow_classification.VC.VC.opendb
+build/vc14/tensorflow_classification.VC.db
+build/vc14/x64/
+# ignore the extra *.lib files, too large
+extra/tensorflow-r1.2/libprotobuf.lib
+extra/tensorflow-r1.2/tensorflow.lib
