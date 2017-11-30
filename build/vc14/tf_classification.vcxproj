@@ -35,7 +35,7 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
@@ -75,8 +75,9 @@
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <TargetExt>.dll</TargetExt>
-    <OutDir>..\bin</OutDir>
+    <TargetExt>.exe</TargetExt>
+    <OutDir>..\..\bin\</OutDir>
+    <LinkIncremental />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>..\..\bin\</OutDir>
@@ -102,16 +103,21 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\extra\tensorflow-r1.2;..\extra\tensorflow-r1.2\external\zlib_archive;..\extra\tensorflow-r1.2\external\gif_archive\giflib-5.1.4;..\extra\tensorflow-r1.2\external\png_archive;..\extra\tensorflow-r1.2\external\eigen_archive;..\extra\tensorflow-r1.2\external\jpeg_archive;..\extra\tensorflow-r1.2\third_party\eigen3;..\extra\tensorflow-r1.2\gemmlowp\src\gemmlowp;..\..\extra\tensorflow-r1.2\jsoncpp\src\jsoncpp;..\extra\tensorflow-r1.2\external\farmhash_archive;..\extra\tensorflow-r1.2\external\farmhash_archive\util;..\extra\tensorflow-r1.2\external\highwayhash;..\extra\tensorflow-r1.2\third_party\gpus;..\extra\tensorflow-r1.2\tensorflow\contrib\cmake\build\;D:\buildtools\opencv\build\include;</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>HIK_WIN64;WIN32;_HIK_DSP_APP_;_DEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <AdditionalIncludeDirectories>..\..\extra\tensorflow-r1.2;..\..\extra\tensorflow-r1.2\external\zlib_archive;..\..\extra\tensorflow-r1.2\external\gif_archive\giflib-5.1.4;..\..\extra\tensorflow-r1.2\external\png_archive;..\..\extra\tensorflow-r1.2\external\eigen_archive;..\..\extra\tensorflow-r1.2\external\jpeg_archive;..\..\extra\tensorflow-r1.2\third_party\eigen3;..\..\extra\tensorflow-r1.2\gemmlowp\src\gemmlowp;..\..\extra\tensorflow-r1.2\jsoncpp\src\jsoncpp;..\..\extra\tensorflow-r1.2\external\farmhash_archive;..\..\extra\tensorflow-r1.2\external\farmhash_archive\util;..\..\extra\tensorflow-r1.2\external\highwayhash;..\..\extra\tensorflow-r1.2\third_party\gpus;..\..\extra\tensorflow-r1.2\tensorflow\contrib\cmake\build\;%(AdditionalIncludeDirectories);D:\buildtools\opencv\build\include;C:\Program Files\Java\jdk1.8.0_151\include;C:\Program Files\Java\jdk1.8.0_151\include\win32;$(VCInstallDir)UnitTest\include;$(IncludePath)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_ITERATOR_DEBUG_LEVEL=0;EIGEN_AVOID_STL_ARRAY;NOMINMAX;_WIN32_WINNT=0x0A00;LANG_CXX11;COMPILER_MSVC;OS_WIN;_MBCS;WIN64;WIN32_LEAN_AND_MEAN;NOGDI;PLATFORM_WINDOWS;TENSORFLOW_USE_EIGEN_THREADPOOL;EIGEN_HAS_C99_MATH;TF_COMPILE_LIBRARY;GOOGLE_CUDA=1;TF_EXTRA_CUDA_CAPABILITIES=3.0,3.5,5.2;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <StringPooling>true</StringPooling>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\extra\cnn_lib\mvbi_cnn_lib\;..\..\extra\HIK_CUDA\lib;..\..\extra\opencv3\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libHIK_CUDA.lib;cudnn.lib;cublas.lib;cudart.lib;CNN_LIB_gpu_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>..\bin\$(ProjectName).dll</OutputFile>
+      <AdditionalLibraryDirectories>D:\buildtools\opencv\build\x64\vc12\lib;..\..\extra\tensorflow-r1.2\;%(AdditionalLibraryDirectories);$(VCInstallDir)UnitTest\lib;$(LibraryPath)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opencv_world310d.lib;tensorflow.lib;libprotobuf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <SubSystem>Console</SubSystem>
     </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>

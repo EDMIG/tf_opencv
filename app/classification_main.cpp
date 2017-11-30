@@ -308,8 +308,8 @@ int main(int argc, char* argv[]) {
 	// input the model expects. If you train your own model, or use something
 	// other than inception_v3, then you'll need to update these.
 	cv::Mat cvmat;
-	string image = "grace_hopper.jpg";
-	string graph = "inception_v3_2016_08_28_frozen.pb";
+	string image = "0022.jpg";
+	string graph = "frozen_model_classifier.pb";
 	string labels = "imagenet_slim_labels.txt";
 	int32 input_width = INPUT_WIDTH;
 	int32 input_height = INPUT_HEIGHT;
@@ -318,7 +318,7 @@ int main(int argc, char* argv[]) {
 	string input_layer = "input";
 	string output_layer = "InceptionV3/Predictions/Reshape_1";
 	bool self_test = false;
-	string root_dir = "../../data";
+	string root_dir = "model";
 	std::vector<Flag> flag_list = {
 		Flag("image", &image, "image to be processed"),
 		Flag("graph", &graph, "graph to be executed"),

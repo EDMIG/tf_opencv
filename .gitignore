@@ -7,3 +7,10 @@ build/vc14/x64/
 # ignore the extra *.lib files, too large
 extra/tensorflow-r1.2/libprotobuf.lib
 extra/tensorflow-r1.2/tensorflow.lib
+bin/tensorflow.dll
+bin/tf_classification.ilk
+
+# ignore the build folder
+build/bin/
+# ignore the large *.pb file
+bin/model/frozen_model_classifier.pb
