@@ -34,6 +34,7 @@
 #include <filesystem>
 
 using namespace cv;
+using namespace std;
 
 #define INPUT_WIDTH  (299)
 #define INPUT_HEIGHT (299)
@@ -303,6 +304,40 @@ Status CheckTopLabel(const std::vector<Tensor>& outputs, int expected,
 }
 
 int main(int argc, char* argv[]) {
+	char *videofile = "D:\\AVCaptures\\telus_scutter_near_end.mp4";
+	VideoCapture capture(0);
+	bool readsuccess = capture.open(videofile);
+
+	if (!readsuccess) {
+		cout << "open mp4 file error";
+		return 1;
+	}
+
+	int debugFrame = 100, debugIndex = 0;
+	if (capture.isOpened()) {
+		char c;
+		namedWindow("Video", 0);
+		namedWindow("OutVideo", 1);
+		Mat imageMat, labeledMat;
+		while (true) {
+			bool readSuccess = capture.read(imageMat);
+			if (!readSuccess) {
+				cout << "Done" << endl;
+				break;
+			}
+			imshow("Video", imageMat);
+			labeledMat = imageMat.clone();
+			imshow("OutVideo", labeledMat);
+
+			c = waitKey(100) & 0xFF;
+			if (c == 'ESC' || debugIndex++ > debugFrame) {
+				break;
+			}
+		}
+	}
+
+	return 0; // earily return for debug
+
 	// These are the command-line flags the program can understand.
 	// They define where the graph and input data is located, and what kind of
 	// input the model expects. If you train your own model, or use something
