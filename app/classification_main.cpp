@@ -37,8 +37,8 @@ using namespace cv;
 using namespace std;
 namespace fs = std::experimental::filesystem;
 
-#define INPUT_WIDTH  (299)
-#define INPUT_HEIGHT (299)
+#define INPUT_WIDTH  (224) //(299)
+#define INPUT_HEIGHT (224) // (299)
 
 // These are all common classes it's handy to reference with no namespace.
 using tensorflow::Flag;
@@ -86,7 +86,7 @@ Status ReadTensorFromImageFile(const string& file_name, const int input_height,
 	auto file_reader =
 		tensorflow::ops::ReadFile(root.WithOpName(input_name), file_name);
 	// Now try to figure out what kind of file it is and decode it.
-	const int wanted_channels = 3;
+	const int wanted_channels = 1;// 3; // hack this value for image channel
 	tensorflow::Output image_reader;
 	if (tensorflow::StringPiece(file_name).ends_with(".png")) {
 		image_reader = DecodePng(root.WithOpName("png_reader"), file_reader,
@@ -367,7 +367,7 @@ std::vector<string> SaveVideoToImages(const char *videofile, string imagePath, b
 }
 
 int main(int argc, char* argv[]) {
-	SaveVideoToImages("C:\\dev\\tf_opencv\\bin\\model\\1.trim.264",
+	vector<string> images = SaveVideoToImages("C:\\dev\\tf_opencv\\bin\\model\\1.trim.264",
 		"C:\\dev\\tf_opencv\\bin\\model\\frames\\");
 	// These are the command-line flags the program can understand.
 	// They define where the graph and input data is located, and what kind of
@@ -427,13 +427,14 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
-
-
 	// Get the image from disk as a float array of numbers, resized and normalized
 	// to the specifications the main graph expects.
 	std::vector<Tensor> resized_tensors;
-	string image_path = tensorflow::io::JoinPath(root_dir, image);
 
+	string image_path = images[11]; // tensorflow::io::JoinPath(root_dir, image);
+
+	input_layer = "data_node";
+	output_layer = "Softmax_1";
 
 	tensorflow::Tensor image_size_tensor(tensorflow::DT_INT32, tensorflow::TensorShape({ 3 }));
 	image_size_tensor.vec<int32>()(0) = INPUT_WIDTH;
