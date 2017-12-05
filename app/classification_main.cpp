@@ -35,6 +35,7 @@
 
 using namespace cv;
 using namespace std;
+namespace fs = std::experimental::filesystem;
 
 #define INPUT_WIDTH  (299)
 #define INPUT_HEIGHT (299)
@@ -303,15 +304,28 @@ Status CheckTopLabel(const std::vector<Tensor>& outputs, int expected,
 	return Status::OK();
 }
 
-void SaveVideoToImages(const char *videofile, string imagePath, bool showProgress=false) {
+std::vector<string> SaveVideoToImages(const char *videofile, string imagePath, bool showProgress=false) {
 	/* code for use OpenCV */
 	// char *videofile = "C:\\dev\\tf_opencv\\bin\\model\\1.trim.264"; //"D:\\AVCaptures\\telus_scutter_near_end.mp4"; 
+	vector<string> ret;
+
+	// check if files already exists
+	bool exists = false;
+	for (auto &p : fs::directory_iterator(imagePath)) {
+		ret.push_back(p.path().string());
+		exists = true;
+	}
+
+	if (exists) {
+		return ret;
+	}
+
 	VideoCapture capture(0);
 	bool readsuccess = capture.open(videofile);
 
 	if (!readsuccess) {
 		cout << "open mp4 file error";
-		return ;
+		return ret;
 	}
 
 	int debugFrame = 100, debugIndex = 0;
@@ -336,6 +350,7 @@ void SaveVideoToImages(const char *videofile, string imagePath, bool showProgres
 			ss << imagePath << debugIndex << ".jpg";
 			string jpg = ss.str();
 			imwrite(jpg, imageMat);
+			ret.push_back(jpg);
 			labeledMat = imageMat.clone();
 			if (showProgress) {
 				imshow("OutVideo", labeledMat);
@@ -347,11 +362,13 @@ void SaveVideoToImages(const char *videofile, string imagePath, bool showProgres
 			}
 		}
 	}
+
+	return ret;
 }
 
 int main(int argc, char* argv[]) {
-	//SaveVideoToImages("C:\\dev\\tf_opencv\\bin\\model\\1.trim.264",
-	//	"C:\\dev\\tf_opencv\\bin\\model\\frames\\");
+	SaveVideoToImages("C:\\dev\\tf_opencv\\bin\\model\\1.trim.264",
+		"C:\\dev\\tf_opencv\\bin\\model\\frames\\");
 	// These are the command-line flags the program can understand.
 	// They define where the graph and input data is located, and what kind of
 	// input the model expects. If you train your own model, or use something
