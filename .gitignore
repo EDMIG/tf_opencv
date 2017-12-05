@@ -14,3 +14,7 @@ bin/tf_classification.ilk
 build/bin/
 # ignore the large *.pb file
 bin/model/*.pb
+# ignore the frame images
+bin/model/frames/*.jpg
+bin/model/1.trim.264
+build/vc14/.vs/

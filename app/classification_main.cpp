@@ -303,42 +303,55 @@ Status CheckTopLabel(const std::vector<Tensor>& outputs, int expected,
 	return Status::OK();
 }
 
-int main(int argc, char* argv[]) {
+void SaveVideoToImages(const char *videofile, string imagePath, bool showProgress=false) {
 	/* code for use OpenCV */
-	//char *videofile = "D:\\AVCaptures\\telus_scutter_near_end.mp4";
-	//VideoCapture capture(0);
-	//bool readsuccess = capture.open(videofile);
+	// char *videofile = "C:\\dev\\tf_opencv\\bin\\model\\1.trim.264"; //"D:\\AVCaptures\\telus_scutter_near_end.mp4"; 
+	VideoCapture capture(0);
+	bool readsuccess = capture.open(videofile);
 
-	//if (!readsuccess) {
-	//	cout << "open mp4 file error";
-	//	return 1;
-	//}
+	if (!readsuccess) {
+		cout << "open mp4 file error";
+		return ;
+	}
 
-	//int debugFrame = 100, debugIndex = 0;
-	//if (capture.isOpened()) {
-	//	char c;
-	//	namedWindow("Video", 0);
-	//	namedWindow("OutVideo", 1);
-	//	Mat imageMat, labeledMat;
-	//	while (true) {
-	//		bool readSuccess = capture.read(imageMat);
-	//		if (!readSuccess) {
-	//			cout << "Done" << endl;
-	//			break;
-	//		}
-	//		imshow("Video", imageMat);
-	//		labeledMat = imageMat.clone();
-	//		imshow("OutVideo", labeledMat);
+	int debugFrame = 100, debugIndex = 0;
+	if (capture.isOpened()) {
+		char c;
+		if (showProgress) {
+			namedWindow("Video", 0);
+			namedWindow("OutVideo", 1);
+		}
+		Mat imageMat, labeledMat;
+		stringstream ss;
+		while (true) {
+			bool readSuccess = capture.read(imageMat);
+			if (!readSuccess) {
+				cout << "Done" << endl;
+				break;
+			}
+			if (showProgress) {
+				imshow("Video", imageMat);
+			}
+			ss.str("");
+			ss << imagePath << debugIndex << ".jpg";
+			string jpg = ss.str();
+			imwrite(jpg, imageMat);
+			labeledMat = imageMat.clone();
+			if (showProgress) {
+				imshow("OutVideo", labeledMat);
+			}
 
-	//		c = waitKey(100) & 0xFF;
-	//		if (c == 'ESC' || debugIndex++ > debugFrame) {
-	//			break;
-	//		}
-	//	}
-	//}
+			c = waitKey(100) & 0xFF;
+			if (c == 'ESC' || debugIndex++ > debugFrame) {
+				break;
+			}
+		}
+	}
+}
 
-	//return 0; // earily return for debug
-
+int main(int argc, char* argv[]) {
+	//SaveVideoToImages("C:\\dev\\tf_opencv\\bin\\model\\1.trim.264",
+	//	"C:\\dev\\tf_opencv\\bin\\model\\frames\\");
 	// These are the command-line flags the program can understand.
 	// They define where the graph and input data is located, and what kind of
 	// input the model expects. If you train your own model, or use something
@@ -396,6 +409,8 @@ int main(int argc, char* argv[]) {
 		LOG(ERROR) << load_graph_status;
 		return -1;
 	}
+
+
 
 	// Get the image from disk as a float array of numbers, resized and normalized
 	// to the specifications the main graph expects.
