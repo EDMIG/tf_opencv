@@ -366,8 +366,8 @@ std::vector<string> SaveVideoToImages(const char *videofile, string imagePath, b
 	return ret;
 }
 
-int GetFloorNumber(string imgFilePath, std::unique_ptr<tensorflow::Session> *session) {
-	int input_height = 224, input_width = 224, input_mean = 0, input_std = 255;
+int GetFloorNumber(string imgFilePath, std::unique_ptr<tensorflow::Session> *session, int how_many_labels = 10, int input_height = 224, int input_width = 224, int input_mean = 0, int input_std = 255) {
+	// int input_height = 224, input_width = 224, input_mean = 0, input_std = 255;
 	string input_layer = "data_node", output_layer = "Softmax_1";
 	std::vector<Tensor> resized_tensors;
 	std::vector<Tensor> outputs;
@@ -383,7 +383,6 @@ int GetFloorNumber(string imgFilePath, std::unique_ptr<tensorflow::Session> *ses
 
 	Status run_status = (*session)->Run({ { input_layer, resized_tensor } }, { output_layer }, {}, &outputs);
 
-	const int how_many_labels = 10;
 	Tensor indices;
 	Tensor scores;
 	int ret = -1;
@@ -404,8 +403,8 @@ int GetFloorNumber(string imgFilePath, std::unique_ptr<tensorflow::Session> *ses
 	return ret;
 }
 
-int GetArrowNumber(string imgFilePath) {
-	return 0;
+int GetArrowNumber(string imgFilePath, std::unique_ptr<tensorflow::Session> *session) {
+	return GetFloorNumber(imgFilePath, session, 2);
 }
 
 
@@ -458,8 +457,8 @@ int main(int argc, char* argv[]) {
 
 	// First we load and initialize the model.
 	std::unique_ptr<tensorflow::Session> session;
-	string graph_path = tensorflow::io::JoinPath(root_dir, graph);
-	string label_path = tensorflow::io::JoinPath(root_dir, labels);
+	//string graph_path = tensorflow::io::JoinPath(root_dir, graph);
+	//string label_path = tensorflow::io::JoinPath(root_dir, labels);
 
 	string floor_graph = "frozen_model_floor.pb";
 	string floor_graph_path = tensorflow::io::JoinPath(root_dir, floor_graph);
@@ -470,25 +469,18 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
-	// Get the image from disk as a float array of numbers, resized and normalized
-	// to the specifications the main graph expects.
-	std::vector<Tensor> resized_tensors;
-
-	string image_path = images[11]; // tensorflow::io::JoinPath(root_dir, image);
-
-	input_layer = "data_node";
-	output_layer = "Softmax_1";
-
-	tensorflow::Tensor image_size_tensor(tensorflow::DT_INT32, tensorflow::TensorShape({ 3 }));
-	image_size_tensor.vec<int32>()(0) = INPUT_WIDTH;
-	image_size_tensor.vec<int32>()(1) = INPUT_HEIGHT;
-
-	// Actually run the image through the model.
-	std::vector<Tensor> outputs;
-	clock_t  clockBegin, clockEnd;
+	std::unique_ptr<tensorflow::Session> session_arrow;
+	string arrow_graph = "frozen_model_arrow.pb";
+	string arrow_graph_path = tensorflow::io::JoinPath(root_dir, arrow_graph);
+	load_graph_status = LoadGraph(arrow_graph_path, &session_arrow);
+	if (!load_graph_status.ok()) {
+		LOG(ERROR) << load_graph_status;
+		return -1;
+	}
 
 	for (string image_path : images) {
 		cout << "for image:" << image_path << " floor " << GetFloorNumber(image_path, &session) << endl;
+		cout << "arrow " << GetArrowNumber(image_path, &session_arrow) << endl;
 		//Status read_tensor_status = ReadTensorFromImageFile(image_path, input_height, input_width, input_mean,
 		//	input_std, &resized_tensors);
 
