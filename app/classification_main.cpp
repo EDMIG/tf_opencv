@@ -366,6 +366,49 @@ std::vector<string> SaveVideoToImages(const char *videofile, string imagePath, b
 	return ret;
 }
 
+int GetFloorNumber(string imgFilePath, std::unique_ptr<tensorflow::Session> *session) {
+	int input_height = 224, input_width = 224, input_mean = 0, input_std = 255;
+	string input_layer = "data_node", output_layer = "Softmax_1";
+	std::vector<Tensor> resized_tensors;
+	std::vector<Tensor> outputs;
+
+	Status read_tensor_status = ReadTensorFromImageFile(imgFilePath, input_height, input_width, input_mean,
+		input_std, &resized_tensors);
+
+	if (!read_tensor_status.ok()) {
+		LOG(ERROR) << read_tensor_status;
+		return -1;
+	}
+	const Tensor& resized_tensor = resized_tensors[0];
+
+	Status run_status = (*session)->Run({ { input_layer, resized_tensor } }, { output_layer }, {}, &outputs);
+
+	const int how_many_labels = 10;
+	Tensor indices;
+	Tensor scores;
+	int ret = -1;
+	float maxPossible = -1.0;
+	GetTopLabels(outputs, how_many_labels, &indices, &scores);
+	tensorflow::TTypes<float>::Flat scores_flat = scores.flat<float>();
+	tensorflow::TTypes<int32>::Flat indices_flat = indices.flat<int32>();
+	for (int pos = 0; pos < how_many_labels; ++pos) {
+		const int label_index = indices_flat(pos);
+		const float score = scores_flat(pos);
+		LOG(INFO) << label_index << " (" << label_index << "): " << score;
+		if (score > maxPossible) {
+			maxPossible = score;
+			ret = label_index;
+		}
+	}
+
+	return ret;
+}
+
+int GetArrowNumber(string imgFilePath) {
+	return 0;
+}
+
+
 int main(int argc, char* argv[]) {
 	vector<string> images = SaveVideoToImages("C:\\dev\\tf_opencv\\bin\\model\\1.trim.264",
 		"C:\\dev\\tf_opencv\\bin\\model\\frames\\");
@@ -444,44 +487,47 @@ int main(int argc, char* argv[]) {
 	std::vector<Tensor> outputs;
 	clock_t  clockBegin, clockEnd;
 
-	Status read_tensor_status = ReadTensorFromImageFile(image_path, input_height, input_width, input_mean,
-				input_std, &resized_tensors);
+	for (string image_path : images) {
+		cout << "for image:" << image_path << " floor " << GetFloorNumber(image_path, &session) << endl;
+		//Status read_tensor_status = ReadTensorFromImageFile(image_path, input_height, input_width, input_mean,
+		//	input_std, &resized_tensors);
 
-	if (!read_tensor_status.ok()) {
-			LOG(ERROR) << read_tensor_status;
-			return -1;
+		//if (!read_tensor_status.ok()) {
+		//	LOG(ERROR) << read_tensor_status;
+		//	return -1;
+		//}
+		//const Tensor& resized_tensor = resized_tensors[0];
+
+		//clockBegin = clock();
+		//Status run_status = session->Run({ { input_layer, resized_tensor } }, { output_layer }, {}, &outputs);
+		//clockEnd = clock();
+
+		//std::cout << run_status.ToString() << std::endl;
+		//std::cout << "time consume: " << clockEnd - clockBegin << "ms" << std::endl;
+		////std::cout << "output_size:" << outputs.size() << std::endl;
+
+		//// This is for automated testing to make sure we get the expected result with
+		//// the default settings. We know that label 653 (military uniform) should be
+		//// the top label for the Admiral Hopper image.
+		//if (self_test) {
+		//	bool expected_matches;
+		//	Status check_status = CheckTopLabel(outputs, 653, &expected_matches);
+		//	if (!check_status.ok()) {
+		//		LOG(ERROR) << "Running check failed: " << check_status;
+		//		return -1;
+		//	}
+		//	if (!expected_matches) {
+		//		LOG(ERROR) << "Self-test failed!";
+		//		return -1;
+		//	}
+		//}
+
+		//// Do something interesting with the results we've generated.
+		//Status print_status = PrintTopLabels(outputs, label_path);
+		//if (!print_status.ok()) {
+		//	LOG(ERROR) << "Running print failed: " << print_status;
+		//	return -1;
+		//}
 	}
-	const Tensor& resized_tensor = resized_tensors[0];
-
-	clockBegin = clock();
-	Status run_status = session->Run({ { input_layer, resized_tensor }}, { output_layer}, {}, &outputs);
-	clockEnd = clock();
-
-	std::cout << run_status.ToString() << std::endl;
-	std::cout << "time consume: " << clockEnd - clockBegin << "ms" << std::endl;
-		//std::cout << "output_size:" << outputs.size() << std::endl;
-
-		// This is for automated testing to make sure we get the expected result with
-		// the default settings. We know that label 653 (military uniform) should be
-		// the top label for the Admiral Hopper image.
-	if (self_test) {
-		bool expected_matches;
-		Status check_status = CheckTopLabel(outputs, 653, &expected_matches);
-		if (!check_status.ok()) {
-			LOG(ERROR) << "Running check failed: " << check_status;
-			return -1;
-		}
-		if (!expected_matches) {
-			LOG(ERROR) << "Self-test failed!";
-			return -1;
-		}
-	}
-
-		// Do something interesting with the results we've generated.
-		Status print_status = PrintTopLabels(outputs, label_path);
-		if (!print_status.ok()) {
-			LOG(ERROR) << "Running print failed: " << print_status;
-			return -1;
-		}
-		return 0;
+	return 0;
 }
