@@ -407,6 +407,10 @@ int GetArrowNumber(string imgFilePath, std::unique_ptr<tensorflow::Session> *ses
 	return GetFloorNumber(imgFilePath, session, 2);
 }
 
+Status Read_Classfier(string imgFilePath, std::unique_ptr<tensorflow::Session> *session) {
+	return Status::OK();
+}
+
 
 int main(int argc, char* argv[]) {
 	vector<string> images = SaveVideoToImages("C:\\dev\\tf_opencv\\bin\\model\\1.trim.264",
