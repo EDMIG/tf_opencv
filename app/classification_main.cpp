@@ -478,6 +478,15 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
+	std::unique_ptr<tensorflow::Session> session_classifier;
+	string classifier_graph = "frozen_model_classifier.pb";
+	string classifier_graph_path = tensorflow::io::JoinPath(root_dir, classifier_graph);
+	load_graph_status = LoadGraph(classifier_graph_path, &session_classifier);
+	if (!load_graph_status.ok()) {
+		LOG(ERROR) << load_graph_status;
+		return -1;
+	}
+
 	for (string image_path : images) {
 		cout << "for image:" << image_path << " floor " << GetFloorNumber(image_path, &session) << endl;
 		cout << "arrow " << GetArrowNumber(image_path, &session_arrow) << endl;
