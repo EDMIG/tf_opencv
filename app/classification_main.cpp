@@ -408,6 +408,13 @@ int GetArrowNumber(string imgFilePath, std::unique_ptr<tensorflow::Session> *ses
 }
 
 Status Read_Classfier(string imgFilePath, std::unique_ptr<tensorflow::Session> *session) {
+	// https://52.175.242.176:8000/user/stonepeter/notebooks/deephead_tf/use_frozen_pb.ipynb
+	std::vector<string> input_layers = { "input_6","input_5" };
+	// https://github.com/peter6888/keras-frcnn/blob/master/test.ipynb
+	std::vector<string> output_layers = { "dense_class_2/Reshape_1", "dense_regress_2/Reshape_1" };
+
+	std::vector<Tensor> resized_tensors;
+	std::vector<Tensor> outputs;
 	return Status::OK();
 }
 
