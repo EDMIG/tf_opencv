@@ -1,6 +1,6 @@
 
 ## tf_opencv
-Use Tensorflow DLL and use Opencv DLL to do predict and train in the future
+C++ project, which use Tensorflow DLL and use Opencv DLL to do predict and train
 
 
 ## tensorflow dll and library downloads
