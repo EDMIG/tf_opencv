@@ -16,6 +16,10 @@ C++ project, which use Tensorflow DLL and use Opencv DLL to do predict and train
 ## fixed debug build, so that can debug the code
 
 Task List
-[] feed network with two/more inputs
-[] get two/more output from predict
-[] image process: get a specified rect from image to a Tensorflow Tensor
+
+- [ ] feed network with two/more inputs
+
+- [ ] get two/more output from predict
+
+- [ ] image process: get a specified rect from image to a Tensorflow Tensor
+
