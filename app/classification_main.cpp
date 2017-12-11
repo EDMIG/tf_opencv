@@ -415,6 +415,19 @@ Status Read_Classfier(string imgFilePath, std::unique_ptr<tensorflow::Session> *
 
 	std::vector<Tensor> resized_tensors;
 	std::vector<Tensor> outputs;
+
+	// refs https://github.com/tensorflow/tensorflow/blob/38e0922d1e2dcd572379af4496f878492e9f689a/tensorflow/core/public/README.md
+	// and tensorflow/tensorflow/core/public/session.h
+	/*
+	virtual Status Run(const std::vector<std::pair<string, Tensor> >& inputs,
+	const std::vector<string>& output_tensor_names,
+	const std::vector<string>& target_node_names,
+	std::vector<Tensor>* outputs) = 0;
+	*/
+	return Status::OK();
+}
+
+Status Read_RPN(string imgFilePath, std::unique_ptr<tensorflow::Session> *session) {
 	return Status::OK();
 }
 
@@ -484,6 +497,15 @@ int main(int argc, char* argv[]) {
 	string arrow_graph = "frozen_model_arrow.pb";
 	string arrow_graph_path = tensorflow::io::JoinPath(root_dir, arrow_graph);
 	load_graph_status = LoadGraph(arrow_graph_path, &session_arrow);
+	if (!load_graph_status.ok()) {
+		LOG(ERROR) << load_graph_status;
+		return -1;
+	}
+
+	std::unique_ptr<tensorflow::Session> session_rpn;
+	string rpn_graph = "frozen_model_rpn.pb";
+	string rpn_graph_path = tensorflow::io::JoinPath(root_dir, rpn_graph);
+	load_graph_status = LoadGraph(rpn_graph_path, &session_rpn);
 	if (!load_graph_status.ok()) {
 		LOG(ERROR) << load_graph_status;
 		return -1;
