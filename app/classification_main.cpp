@@ -428,6 +428,11 @@ Status Read_Classfier(string imgFilePath, std::unique_ptr<tensorflow::Session> *
 }
 
 Status Read_RPN(string imgFilePath, std::unique_ptr<tensorflow::Session> *session) {
+	string input_layer = "";
+	std::vector<string> output_layers = { "rpn_out_class/Sigmoid", "rpn_out_regress/BiasAdd" };
+	std::vector<Tensor> resized_tensors;
+	std::vector<Tensor> outputs;
+
 	return Status::OK();
 }
 
