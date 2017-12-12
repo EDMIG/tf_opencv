@@ -23,3 +23,8 @@ Task List
 
 - [ ] image process: get a specified rect from image to a Tensorflow Tensor
 
+- [ ] load RPN network and predict
+
+- [ ] implement helper to get ROI as input for classifier network input
+
+
