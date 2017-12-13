@@ -77,7 +77,7 @@ Status ReadLabelsFile(const string& file_name, std::vector<string>* result,
 Status ReadTensorFromImageFile(const string& file_name, const int input_height,
 	const int input_width, const float input_mean,
 	const float input_std,
-	std::vector<Tensor>* out_tensors) {
+	std::vector<Tensor>* out_tensors, const int wanted_channels=1) {
 	auto root = tensorflow::Scope::NewRootScope();
 	using namespace ::tensorflow::ops;  // NOLINT(build/namespaces)
 
@@ -86,7 +86,7 @@ Status ReadTensorFromImageFile(const string& file_name, const int input_height,
 	auto file_reader =
 		tensorflow::ops::ReadFile(root.WithOpName(input_name), file_name);
 	// Now try to figure out what kind of file it is and decode it.
-	const int wanted_channels = 1;// 3; // hack this value for image channel
+	// const int wanted_channels = 1;// 3; // hack this value for image channel
 	tensorflow::Output image_reader;
 	if (tensorflow::StringPiece(file_name).ends_with(".png")) {
 		image_reader = DecodePng(root.WithOpName("png_reader"), file_reader,
@@ -428,7 +428,7 @@ Status Read_Classfier(string imgFilePath, std::unique_ptr<tensorflow::Session> *
 }
 
 Status Read_RPN(string imgFilePath, std::unique_ptr<tensorflow::Session> *session, std::vector<Tensor>* out_tensors) {
-	string input_layer = "";
+	string input_layer = "input_1";
 	std::vector<string> output_layers = { "rpn_out_class/Sigmoid", "rpn_out_regress/BiasAdd" };
 	std::vector<Tensor> resized_tensors;
 	//std::vector<Tensor> outputs;
@@ -438,7 +438,7 @@ Status Read_RPN(string imgFilePath, std::unique_ptr<tensorflow::Session> *sessio
 	int input_mean = 0;
 	int input_std = 255;
 	TF_RETURN_IF_ERROR(ReadTensorFromImageFile(imgFilePath, input_height, input_width, input_mean,
-		input_std, &resized_tensors));
+		input_std, &resized_tensors, 3));
 	
 	const Tensor& resized_tensor = resized_tensors[0];
 
@@ -539,6 +539,12 @@ int main(int argc, char* argv[]) {
 	for (string image_path : images) {
 		cout << "for image:" << image_path << " floor " << GetFloorNumber(image_path, &session) << endl;
 		cout << "arrow " << GetArrowNumber(image_path, &session_arrow) << endl;
+		vector<Tensor> o;
+		load_graph_status = Read_RPN(image_path, &session_rpn, &o);
+		if (!load_graph_status.ok()) {
+			LOG(ERROR) << load_graph_status;
+			return -1;
+		}
 		//Status read_tensor_status = ReadTensorFromImageFile(image_path, input_height, input_width, input_mean,
 		//	input_std, &resized_tensors);
 
