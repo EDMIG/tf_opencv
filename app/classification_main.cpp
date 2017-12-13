@@ -427,11 +427,22 @@ Status Read_Classfier(string imgFilePath, std::unique_ptr<tensorflow::Session> *
 	return Status::OK();
 }
 
-Status Read_RPN(string imgFilePath, std::unique_ptr<tensorflow::Session> *session) {
+Status Read_RPN(string imgFilePath, std::unique_ptr<tensorflow::Session> *session, std::vector<Tensor>* out_tensors) {
 	string input_layer = "";
 	std::vector<string> output_layers = { "rpn_out_class/Sigmoid", "rpn_out_regress/BiasAdd" };
 	std::vector<Tensor> resized_tensors;
-	std::vector<Tensor> outputs;
+	//std::vector<Tensor> outputs;
+	int how_many_labels = 10;
+	int input_height = 224;
+	int input_width = 224;
+	int input_mean = 0;
+	int input_std = 255;
+	TF_RETURN_IF_ERROR(ReadTensorFromImageFile(imgFilePath, input_height, input_width, input_mean,
+		input_std, &resized_tensors));
+	
+	const Tensor& resized_tensor = resized_tensors[0];
+
+	TF_RETURN_IF_ERROR((*session)->Run({ { input_layer, resized_tensor } }, output_layers, {}, out_tensors));
 
 	return Status::OK();
 }
