@@ -497,8 +497,6 @@ int main(int argc, char* argv[]) {
 
 	// First we load and initialize the model.
 	std::unique_ptr<tensorflow::Session> session;
-	//string graph_path = tensorflow::io::JoinPath(root_dir, graph);
-	//string label_path = tensorflow::io::JoinPath(root_dir, labels);
 
 	string floor_graph = "frozen_model_floor.pb";
 	string floor_graph_path = tensorflow::io::JoinPath(root_dir, floor_graph);
@@ -545,45 +543,7 @@ int main(int argc, char* argv[]) {
 			LOG(ERROR) << load_graph_status;
 			return -1;
 		}
-		//Status read_tensor_status = ReadTensorFromImageFile(image_path, input_height, input_width, input_mean,
-		//	input_std, &resized_tensors);
-
-		//if (!read_tensor_status.ok()) {
-		//	LOG(ERROR) << read_tensor_status;
-		//	return -1;
-		//}
-		//const Tensor& resized_tensor = resized_tensors[0];
-
-		//clockBegin = clock();
-		//Status run_status = session->Run({ { input_layer, resized_tensor } }, { output_layer }, {}, &outputs);
-		//clockEnd = clock();
-
-		//std::cout << run_status.ToString() << std::endl;
-		//std::cout << "time consume: " << clockEnd - clockBegin << "ms" << std::endl;
-		////std::cout << "output_size:" << outputs.size() << std::endl;
-
-		//// This is for automated testing to make sure we get the expected result with
-		//// the default settings. We know that label 653 (military uniform) should be
-		//// the top label for the Admiral Hopper image.
-		//if (self_test) {
-		//	bool expected_matches;
-		//	Status check_status = CheckTopLabel(outputs, 653, &expected_matches);
-		//	if (!check_status.ok()) {
-		//		LOG(ERROR) << "Running check failed: " << check_status;
-		//		return -1;
-		//	}
-		//	if (!expected_matches) {
-		//		LOG(ERROR) << "Self-test failed!";
-		//		return -1;
-		//	}
-		//}
-
-		//// Do something interesting with the results we've generated.
-		//Status print_status = PrintTopLabels(outputs, label_path);
-		//if (!print_status.ok()) {
-		//	LOG(ERROR) << "Running print failed: " << print_status;
-		//	return -1;
-		//}
+		cout << "o.size():" << o.size() << endl;
 	}
 	return 0;
 }
