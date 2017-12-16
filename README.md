@@ -23,7 +23,7 @@ Task List
 
 - [ ] feed network with two/more inputs (NO UI)
 
-- [ ] get two/more output from predict (NO UI)
+- [X] get two/more output from predict (NO UI)
 
 - [ ] image process: get a specified rect from image to a Tensorflow Tensor
 
